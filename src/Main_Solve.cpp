@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
 
   Albany::PrintHeader(*out);
 
+  bool reportTimers = true;
   const auto stackedTimer = Teuchos::rcp(
       new Teuchos::StackedTimer("Albany Total Time"));
   Teuchos::TimeMonitor::setStackedTimer(stackedTimer);
@@ -104,6 +105,10 @@ int main(int argc, char *argv[])
     if (cmd.vtune) { Albany::connect_vtune(comm->getRank()); }
 
     Albany::SolverFactory slvrfctry(cmd.yaml_filename, comm);
+
+    Teuchos::ParameterList &debugParams =
+        slvrfctry.getParameters()->sublist("Debug Output", true);
+    reportTimers = debugParams.get<bool>("Report Timers", true);
 
     auto const& bt = slvrfctry.getParameters()->get<std::string>("Build Type","NONE");
 
@@ -335,8 +340,6 @@ int main(int argc, char *argv[])
 
     // Create debug output object
     if (thyraResponses.size()>0) {
-      Teuchos::ParameterList &debugParams =
-          slvrfctry.getParameters()->sublist("Debug Output", true);
       bool writeToMatrixMarketSoln =
           debugParams.get("Write Solution to MatrixMarket", false);
       bool writeToMatrixMarketDistrSolnMap = debugParams.get(
@@ -367,10 +370,12 @@ int main(int argc, char *argv[])
   if (!success) status += 10000;
 
   stackedTimer->stop("Albany Total Time");
-  Teuchos::StackedTimer::OutputOptions options;
-  options.output_fraction = true;
-  options.output_minmax = true;
-  stackedTimer->report(std::cout, Teuchos::DefaultComm<int>::getComm(), options);
+  if (reportTimers) {
+    Teuchos::StackedTimer::OutputOptions options;
+    options.output_fraction = true;
+    options.output_minmax = true;
+    stackedTimer->report(std::cout, Teuchos::DefaultComm<int>::getComm(), options);
+  }
 
   Kokkos::finalize_all();
 

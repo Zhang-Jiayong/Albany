@@ -369,6 +369,7 @@ SolverFactory::getValidDebugParameters() const
   validPL->set<bool>("Write Distributed Solution and Map to MatrixMarket", false, "Flag to Write Distributed Solution and Map to MatrixMarket"); 
   validPL->set<bool>("Write Solution to Standard Output", false, "Flag to Write Sotion to Standard Output");
   validPL->set<bool>("Analyze Memory", false, "Flag to Analyze Memory");
+  validPL->set<bool>("Report Timers", true, "Whether to report timers at the end of execution");
   return validPL; 
 }
 
