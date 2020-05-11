@@ -649,10 +649,10 @@ evalModelImpl(const Thyra_InArgs&  inArgs,
     auto& opt_paramList = analysisParams.sublist("Optimization Status");
     if(opt_paramList.isParameter("Optimization Variables Changed") && opt_paramList.get<bool>("Optimization Variables Changed")) {
       if(opt_paramList.isParameter("Parameter Names")) {
-        auto& param_names = *opt_paramList.get<Teuchos::RCP<std::vector<std::string>>>("Parameter Names");
-        for (int k=0; k < param_names.size(); ++k) {
-          *out << param_names[k] << " has changed!" << std::endl;
-          app->getPhxSetup()->init_unsaved_param(param_names[k]);
+        auto& pnames = *opt_paramList.get<Teuchos::RCP<std::vector<std::string>>>("Parameter Names");
+        for (std::size_t k=0; k < pnames.size(); ++k) {
+          *out << pnames[k] << " has changed!" << std::endl;
+          app->getPhxSetup()->init_unsaved_param(pnames[k]);
         }
       }
       opt_paramList.set("Optimization Variables Changed", false);
@@ -666,7 +666,7 @@ evalModelImpl(const Thyra_InArgs&  inArgs,
       int write_interval = analysisParams.get("Write Interval",1);
       if((iter >= 0) && (iter != iteration) && (iteration%write_interval == 0))
       {
-        Teuchos::TimeMonitor timer(*Teuchos::TimeMonitor::getNewTimer("Albany: Output to File"));
+        Teuchos::TimeMonitor output_timer(*Teuchos::TimeMonitor::getNewTimer("Albany: Output to File"));
         const Teuchos::RCP<const Thyra_Vector> x = inArgs.get_x();
         ObserverImpl observer(app);
         observer.observeSolution(iter, *x, Teuchos::null, Teuchos::null);
