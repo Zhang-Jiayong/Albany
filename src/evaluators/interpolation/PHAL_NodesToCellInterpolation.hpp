@@ -59,6 +59,21 @@ private:
 
   // Output:
   PHX::MDField<OutputScalarT>                       field_cell;
+
+public:
+
+  typedef Kokkos::View<int***, PHX::Device>::execution_space ExecutionSpace;
+
+  struct Vector_Field_Tag{};
+  struct Scalar_Field_Tag{};
+
+  typedef Kokkos::RangePolicy<ExecutionSpace,Vector_Field_Tag> Vector_Field_Policy;
+  typedef Kokkos::RangePolicy<ExecutionSpace,Scalar_Field_Tag> Scalar_Field_Policy;
+
+  KOKKOS_INLINE_FUNCTION
+  void operator() (const Vector_Field_Tag& tag, const int& cell) const;
+  KOKKOS_INLINE_FUNCTION
+  void operator() (const Scalar_Field_Tag& tag, const int& cell) const;
 };
 
 // Some shortcut names

@@ -44,6 +44,59 @@ NodesToCellInterpolationBase (const Teuchos::ParameterList& p,
 }
 
 //**********************************************************************
+// Kokkos operators
+template<typename EvalT, typename Traits, typename ScalarT>
+void NodesToCellInterpolationBase<EvalT, Traits, ScalarT>::
+operator() (const Vector_Field_Tag& tag, const int& cell) const{
+
+  ScalarT field_qp;
+
+  MeshScalarT meas = 0.0;
+  for (int qp(0); qp<numQPs; ++qp)
+  {
+    meas += w_measure(cell,qp);
+  }
+
+  for (int dim(0); dim<vecDim; ++dim)
+  {
+    field_cell(cell,dim) = 0;
+    for (int qp(0); qp<numQPs; ++qp)
+    {
+      field_qp = 0;
+      for (int node(0); node<numNodes; ++node)
+        field_qp += field_node(cell,node,dim)*BF(cell,node,qp);
+      field_cell(cell,dim) += field_qp*w_measure(cell,qp);
+    }
+    field_cell(cell,dim) /= meas;
+  }
+
+}
+
+template<typename EvalT, typename Traits, typename ScalarT>
+void NodesToCellInterpolationBase<EvalT, Traits, ScalarT>::
+operator() (const Scalar_Field_Tag& tag, const int& cell) const{
+
+  ScalarT field_qp;
+
+  MeshScalarT meas = 0.0;
+  for (int qp(0); qp<numQPs; ++qp)
+  {
+    meas += w_measure(cell,qp);
+  }
+
+  field_cell(cell) = 0;
+  for (int qp(0); qp<numQPs; ++qp)
+  {
+    field_qp = 0;
+    for (int node(0); node<numNodes; ++node)
+      field_qp += field_node(cell,node)*BF(cell,node,qp);
+    field_cell(cell) += field_qp*w_measure(cell,qp);
+  }
+  field_cell(cell) /= meas;
+
+}
+
+//**********************************************************************
 template<typename EvalT, typename Traits, typename ScalarT>
 void NodesToCellInterpolationBase<EvalT, Traits, ScalarT>::
 postRegistrationSetup(typename Traits::SetupData d,
@@ -65,45 +118,52 @@ void NodesToCellInterpolationBase<EvalT, Traits, ScalarT>::evaluateFields (typen
 {
   if (memoizer.have_saved_data(workset,this->evaluatedFields())) return;
 
-  MeshScalarT meas;
-  ScalarT field_qp;
-
-  for (int cell=0; cell<workset.numCells; ++cell)
-  {
-    meas = 0.0;
-    for (int qp(0); qp<numQPs; ++qp)
-    {
-      meas += w_measure(cell,qp);
-    }
-
-    if (isVectorField)
-    {
-      for (int dim(0); dim<vecDim; ++dim)
-      {
-        field_cell(cell,dim) = 0;
-        for (int qp(0); qp<numQPs; ++qp)
-        {
-          field_qp = 0;
-          for (int node(0); node<numNodes; ++node)
-            field_qp += field_node(cell,node,dim)*BF(cell,node,qp);
-          field_cell(cell,dim) += field_qp*w_measure(cell,qp);
-        }
-        field_cell(cell,dim) /= meas;
-      }
-    }
-    else
-    {
-      field_cell(cell) = 0;
-      for (int qp(0); qp<numQPs; ++qp)
-      {
-        field_qp = 0;
-        for (int node(0); node<numNodes; ++node)
-          field_qp += field_node(cell,node)*BF(cell,node,qp);
-        field_cell(cell) += field_qp*w_measure(cell,qp);
-      }
-      field_cell(cell) /= meas;
-    }
+  if (isVectorField){
+    Kokkos::parallel_for(Vector_Field_Policy(0, workset.numCells), *this);
   }
+  else{
+    Kokkos::parallel_for(Scalar_Field_Policy(0, workset.numCells), *this);
+  }
+
+  // MeshScalarT meas;
+  // ScalarT field_qp;
+
+  // for (int cell=0; cell<workset.numCells; ++cell)
+  // {
+  //   meas = 0.0;
+  //   for (int qp(0); qp<numQPs; ++qp)
+  //   {
+  //     meas += w_measure(cell,qp);
+  //   }
+
+  //   if (isVectorField)
+  //   {
+  //     for (int dim(0); dim<vecDim; ++dim)
+  //     {
+  //       field_cell(cell,dim) = 0;
+  //       for (int qp(0); qp<numQPs; ++qp)
+  //       {
+  //         field_qp = 0;
+  //         for (int node(0); node<numNodes; ++node)
+  //           field_qp += field_node(cell,node,dim)*BF(cell,node,qp);
+  //         field_cell(cell,dim) += field_qp*w_measure(cell,qp);
+  //       }
+  //       field_cell(cell,dim) /= meas;
+  //     }
+  //   }
+  //   else
+  //   {
+  //     field_cell(cell) = 0;
+  //     for (int qp(0); qp<numQPs; ++qp)
+  //     {
+  //       field_qp = 0;
+  //       for (int node(0); node<numNodes; ++node)
+  //         field_qp += field_node(cell,node)*BF(cell,node,qp);
+  //       field_cell(cell) += field_qp*w_measure(cell,qp);
+  //     }
+  //     field_cell(cell) /= meas;
+  //   }
+  // }
 }
 
 } // Namespace PHAL
