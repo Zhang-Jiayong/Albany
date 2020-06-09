@@ -202,8 +202,6 @@ list (APPEND SOURCES
   problems/Albany_BCUtils.cpp
   problems/Albany_EvaluatorUtils.cpp
   problems/Albany_HeatProblem.cpp
-  problems/Albany_ThermalProblem.cpp
-  problems/Albany_ThermalProblemWithSensitivities.cpp
   problems/Albany_Layouts.cpp
   problems/Albany_PopulateMesh.cpp
   problems/Albany_ProblemFactory.cpp
@@ -212,6 +210,7 @@ list (APPEND SOURCES
   problems/Albany_SideLaplacianProblem.cpp
   problems/Albany_MaterialDatabase.cpp
   )
+
 list (APPEND HEADERS
   problems/Albany_AbstractProblem.hpp
   problems/Albany_BCUtils.hpp
@@ -220,8 +219,6 @@ list (APPEND HEADERS
   problems/Albany_EvaluatorUtils_Def.hpp
   problems/Albany_GeneralPurposeFieldsNames.hpp
   problems/Albany_HeatProblem.hpp
-  problems/Albany_ThermalProblem.hpp
-  problems/Albany_ThermalProblemWithSensitivities.hpp
   problems/Albany_Layouts.hpp
   problems/Albany_PopulateMesh.hpp
   problems/Albany_ProblemFactory.hpp
@@ -230,7 +227,9 @@ list (APPEND HEADERS
   problems/Albany_ResponseUtilities_Def.hpp
   problems/Albany_SideLaplacianProblem.hpp
   problems/Albany_MaterialDatabase.hpp
+  problems/Albany_ParamEnum.hpp
   )
+
 
 #responses
 list (APPEND SOURCES
@@ -393,9 +392,6 @@ list (APPEND SOURCES
   evaluators/interpolation/PHAL_QuadPointsToCellInterpolation.cpp
   evaluators/interpolation/PHAL_SideQuadPointsToSideInterpolation.cpp
   evaluators/pde/PHAL_HeatEqResid.cpp
-  evaluators/pde/PHAL_ThermalResid.cpp
-  evaluators/pde/PHAL_ThermalSource.cpp
-  evaluators/pde/PHAL_ThermalResidWithSensitivities.cpp
   evaluators/pde/PHAL_NSMaterialProperty.cpp
   evaluators/pde/PHAL_SideLaplacianResidual.cpp
   evaluators/pde/PHAL_ThermalConductivity.cpp
@@ -431,7 +427,6 @@ list (APPEND SOURCES
   evaluators/utility/PHAL_LangevinNoiseTerm.cpp
   evaluators/utility/PHAL_MapToPhysicalFrame.cpp
   evaluators/utility/PHAL_MapToPhysicalFrameSide.cpp
-  evaluators/utility/PHAL_SharedParameter.cpp
   evaluators/utility/PHAL_Source.cpp
   evaluators/utility/QCAD_EvaluatorTools.cpp
   evaluators/utility/QCAD_MathVector.cpp
@@ -513,18 +508,13 @@ list (APPEND HEADERS
   evaluators/interpolation/PHAL_SideQuadPointsToSideInterpolation_Def.hpp
   evaluators/pde/PHAL_HeatEqResid.hpp
   evaluators/pde/PHAL_HeatEqResid_Def.hpp
-  evaluators/pde/PHAL_ThermalResid.hpp
-  evaluators/pde/PHAL_ThermalResid_Def.hpp
-  evaluators/pde/PHAL_ThermalSource.hpp
-  evaluators/pde/PHAL_ThermalSource_Def.hpp
-  evaluators/pde/PHAL_ThermalResidWithSensitivities.hpp
-  evaluators/pde/PHAL_ThermalResidWithSensitivities_Def.hpp
   evaluators/pde/PHAL_NSMaterialProperty.hpp
   evaluators/pde/PHAL_NSMaterialProperty_Def.hpp
   evaluators/pde/PHAL_SideLaplacianResidual.hpp
   evaluators/pde/PHAL_SideLaplacianResidual_Def.hpp
   evaluators/pde/PHAL_ThermalConductivity.hpp
   evaluators/pde/PHAL_ThermalConductivity_Def.hpp
+  evaluators/utility/PHAL_SharedParameter.hpp
   evaluators/response/PHAL_ResponseFieldIntegral.hpp
   evaluators/response/PHAL_ResponseFieldIntegral_Def.hpp
   evaluators/response/PHAL_ResponseSquaredL2Difference.hpp
@@ -587,8 +577,6 @@ list (APPEND HEADERS
   evaluators/utility/PHAL_MapToPhysicalFrameSide.hpp
   evaluators/utility/PHAL_MapToPhysicalFrameSide_Def.hpp
   evaluators/utility/PHAL_MapToPhysicalFrame_Def.hpp
-  evaluators/utility/PHAL_SharedParameter.hpp
-  evaluators/utility/PHAL_SharedParameter_Def.hpp
   evaluators/utility/PHAL_Source.hpp
   evaluators/utility/PHAL_Source_Def.hpp
   evaluators/utility/QCAD_EvaluatorTools.hpp
@@ -603,7 +591,6 @@ if(ALBANY_STK_EXPR_EVAL)
     evaluators/bc/PHAL_ExprEvalSDBC.hpp
     evaluators/bc/PHAL_ExprEvalSDBC_Def.hpp)
 endif()
-
 
 if (ALBANY_EPETRA)
   list (APPEND HEADERS
@@ -656,6 +643,7 @@ if(ALBANY_DEMO_PDES)
     problems/Albany_NavierStokes.cpp
     problems/Albany_PNPProblem.cpp
     problems/Albany_ThermoElectrostaticsProblem.cpp
+    problems/Albany_ThermalProblem.cpp
     evaluators/pde/PHAL_AdvDiffResid.cpp
     evaluators/pde/PHAL_ReactDiffSystemResid.cpp
     evaluators/pde/PHAL_CahnHillChemTerm.cpp
@@ -675,6 +663,7 @@ if(ALBANY_DEMO_PDES)
     evaluators/pde/PHAL_NSMomentumResid.cpp
     evaluators/pde/PHAL_NSNeutronEqResid.cpp
     evaluators/pde/PHAL_NSPermeabilityTerm.cpp
+    evaluators/pde/PHAL_ThermalResid.cpp
     evaluators/pde/PHAL_NSRm.cpp
     evaluators/pde/PHAL_NSTauM.cpp
     evaluators/pde/PHAL_NSTauT.cpp
@@ -698,6 +687,7 @@ if(ALBANY_DEMO_PDES)
     problems/Albany_ODEProblem.hpp
     problems/Albany_PNPProblem.hpp
     problems/Albany_ThermoElectrostaticsProblem.hpp
+    problems/Albany_ThermalProblem.hpp
     evaluators/pde/PHAL_AdvDiffResid.hpp
     evaluators/pde/PHAL_AdvDiffResid_Def.hpp
     evaluators/pde/PHAL_ReactDiffSystemResid.hpp
@@ -756,6 +746,8 @@ if(ALBANY_DEMO_PDES)
     evaluators/pde/PNP_ConcentrationResid_Def.hpp
     evaluators/pde/PNP_PotentialResid.hpp
     evaluators/pde/PNP_PotentialResid_Def.hpp
+    evaluators/pde/PHAL_ThermalResid.hpp
+    evaluators/pde/PHAL_ThermalResid_Def.hpp
   )
 
   add_library(albanyPDEs ${Albany_LIBRARY_TYPE} ${PDE_SRCS})
