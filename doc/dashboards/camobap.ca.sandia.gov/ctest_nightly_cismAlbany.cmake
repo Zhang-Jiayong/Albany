@@ -23,7 +23,7 @@ set (INITIAL_LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH})
 
 set (CTEST_PROJECT_NAME "Albany" )
 set (CTEST_SOURCE_NAME repos)
-set (CTEST_BUILD_NAME "fedora31-gcc9.3.1-${CTEST_BUILD_CONFIGURATION}-Cism-Albany")
+set (CTEST_BUILD_NAME "fedora32-gcc10.1.1-${CTEST_BUILD_CONFIGURATION}-Cism-Albany")
 set (CTEST_BINARY_NAME build)
 
 
@@ -168,7 +168,7 @@ if (BUILD_CISM_PISCEES)
 
   # Configure the CISM-Albany build 
   #
-  set (TRILINSTALLDIR "/home/ikalash/nightlyAlbanyTests/Results/Trilinos/build/install")
+  set (TRILINSTALLDIR "/nightlyAlbanyTests/Results/Trilinos/build/install")
 
   set (CONFIGURE_OPTIONS
     "-Wno-dev"
@@ -181,10 +181,10 @@ if (BUILD_CISM_PISCEES)
     "-DALBANY_LANDICE_CTEST:BOOL=ON"
     "-DCISM_ALBANY_DIR=${CTEST_BINARY_DIRECTORY}/IKTAlbanyInstall"
     "-DCISM_MPI_BASE_DIR=/usr/lib64/openmpi"
-    "-DCISM_NETCDF_DIR=/home/ikalash/albany-tpls-gcc-9.3.1"
+    "-DCISM_NETCDF_DIR=/nightlyCDash/albany-tpls-gcc-10.1.1"
     "-DCISM_NETCDF_LIBS='netcdff'"
     "-DBUILD_SHARED_LIBS:BOOL=ON"
-    "-DCMAKE_Fortran_FLAGS='-O2 -ffree-line-length-none -fPIC -fno-range-check'"
+    "-DCMAKE_Fortran_FLAGS='-g -ffree-line-length-none -fPIC -fno-range-check -std=legacy'"
     "-DCMAKE_VERBOSE_MAKEFILE=OFF"
   )
 
