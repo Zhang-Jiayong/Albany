@@ -61,8 +61,14 @@ private:
   PHX::MDField<ScalarT,Cell,Node> enthalpyBasalResid;      // [MW] = [k^{-2} kPa s^{-1} km^3]
   // PHX::MDField<ScalarT,Cell,Side, Node> basalMeltRate;      // [MW] = [m/yr]
 
-  //std::vector<std::vector<int> >  sideNodes;
-  Kokkos::View<int**> sideNodes;
+  // Temporary Views
+  Kokkos::DynRankView<ScalarT, PHX::Device> basalMeltRateQP_reorder;
+  Kokkos::DynRankView<RealType, PHX::Device> BF_reorder;
+  Kokkos::DynRankView<MeshScalarT, PHX::Device> w_measure_reorder;
+  
+  Albany::SideStructViews sideSet;
+
+  Kokkos::DynRankView<int, PHX::Device> sideNodes;
   std::string                     basalSideName;
 
   int numCellNodes;
@@ -90,16 +96,12 @@ private:
 
   typedef Kokkos::View<int***, PHX::Device>::execution_space ExecutionSpace;
 
-  struct Clear_Residual_Tag{};
-  struct Enthalpy_Basil_Resid_Tag{};
+  struct Side_Node_Evaluation_Tag{};
 
-  typedef Kokkos::MDRangePolicy<ExecutionSpace,Clear_Residual_Tag,Kokkos::Rank<2>> Clear_Residual_Policy;
-  typedef Kokkos::RangePolicy<ExecutionSpace,Enthalpy_Basil_Resid_Tag> Enthalpy_Basil_Resid_Policy;
+  typedef Kokkos::RangePolicy<ExecutionSpace,Side_Node_Evaluation_Tag> Side_Node_Evaluation_Policy;
 
   KOKKOS_INLINE_FUNCTION
-  void operator() (const Clear_Residual_Tag& tag, const int& i, const int& j) const;
-  KOKKOS_INLINE_FUNCTION
-  void operator() (const Enthalpy_Basil_Resid_Tag& tag, const int& i) const;
+  void operator() (const Side_Node_Evaluation_Tag& tag, const int& i) const;
 
 };
 
