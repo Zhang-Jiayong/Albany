@@ -510,20 +510,20 @@ LandIce::Enthalpy::constructEvaluators (PHX::FieldManager<PHAL::AlbanyTraits>& f
       ev = Teuchos::rcp(new LandIce::Dissipation<EvalT,PHAL::AlbanyTraits>(*p,dl));
       fm0.template registerEvaluator<EvalT>(ev);
     }
-    // { //save
-    //   std::string stateName = "LandIce Dissipation";
-    //   entity = Albany::StateStruct::QuadPoint;
-    //   p = stateMgr.registerStateVariable(stateName, dl->qp_scalar, elementBlockName, true, &entity, "");
-    //   p->set<std::string>("Field Name", stateName);
-    //   p->set("Field Layout", dl->qp_scalar);
-    //   p->set<bool>("Nodal State", false);
+    { //save
+      std::string stateName = "LandIce Dissipation";
+      entity = Albany::StateStruct::QuadPoint;
+      p = stateMgr.registerStateVariable(stateName, dl->qp_scalar, elementBlockName, true, &entity, "");
+      p->set<std::string>("Field Name", stateName);
+      p->set("Field Layout", dl->qp_scalar);
+      p->set<bool>("Nodal State", false);
 
-    //   ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
-    //   fm0.template registerEvaluator<EvalT>(ev);
+      ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
+      fm0.template registerEvaluator<EvalT>(ev);
 
-    //   if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
-    //     fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
-    // }
+      if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
+        fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
+    }
 
     // --- LandIce Viscosity ---
     {
@@ -645,20 +645,20 @@ LandIce::Enthalpy::constructEvaluators (PHX::FieldManager<PHAL::AlbanyTraits>& f
     ev = Teuchos::rcp(new LandIce::PressureMeltingEnthalpy<EvalT,PHAL::AlbanyTraits,typename EvalT::ParamScalarT>(*p,dl));
     fm0.template registerEvaluator<EvalT>(ev);
 
-    // { // Saving the melting temperature in the output mesh
-    //   std::string stateName = "melting temp";
-    //   entity = Albany::StateStruct::NodalDataToElemNode;
-    //   p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
-    //   p->set<std::string>("Field Name", "melting temp");
-    //   p->set("Field Layout", dl->node_scalar);
-    //   p->set<bool>("Nodal State", true);
+    { // Saving the melting temperature in the output mesh
+      std::string stateName = "melting temp";
+      entity = Albany::StateStruct::NodalDataToElemNode;
+      p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
+      p->set<std::string>("Field Name", "melting temp");
+      p->set("Field Layout", dl->node_scalar);
+      p->set<bool>("Nodal State", true);
 
-    //   ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
-    //   fm0.template registerEvaluator<EvalT>(ev);
+      ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
+      fm0.template registerEvaluator<EvalT>(ev);
 
-    //   if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
-    //     fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
-    // }
+      if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
+        fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
+    }
   }
 
   // --- LandIce Surface Air Enthalpy
@@ -702,20 +702,20 @@ LandIce::Enthalpy::constructEvaluators (PHX::FieldManager<PHAL::AlbanyTraits>& f
     fm0.template registerEvaluator<EvalT>(ev);
 
     // Saving the temperature in the output mesh
-    // {
-    //   std::string stateName = "Temperature";
-    //   entity = Albany::StateStruct::NodalDataToElemNode;
-    //   p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
-    //   p->set<std::string>("Field Name", "Temperature");
-    //   p->set("Field Layout", dl->node_scalar);
-    //   p->set<bool>("Nodal State", true);
+    {
+      std::string stateName = "Temperature";
+      entity = Albany::StateStruct::NodalDataToElemNode;
+      p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
+      p->set<std::string>("Field Name", "Temperature");
+      p->set("Field Layout", dl->node_scalar);
+      p->set<bool>("Nodal State", true);
 
-    //   ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
-    //   fm0.template registerEvaluator<EvalT>(ev);
+      ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
+      fm0.template registerEvaluator<EvalT>(ev);
 
-    //   if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
-    //     fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
-    // }
+      if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
+        fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
+    }
 
     {
       std::string stateName = "surface_enthalpy";
@@ -731,20 +731,20 @@ LandIce::Enthalpy::constructEvaluators (PHX::FieldManager<PHAL::AlbanyTraits>& f
     }
 
     // Saving the diff enthalpy field in the output mesh
-    // {
-    //   std::string stateName = "h-h_s";
-    //   entity = Albany::StateStruct::NodalDataToElemNode;
-    //   p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
-    //   p->set<std::string>("Field Name", "Diff Enth");
-    //   p->set("Field Layout", dl->node_scalar);
-    //   p->set<bool>("Nodal State", true);
+    {
+      std::string stateName = "h-h_s";
+      entity = Albany::StateStruct::NodalDataToElemNode;
+      p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
+      p->set<std::string>("Field Name", "Diff Enth");
+      p->set("Field Layout", dl->node_scalar);
+      p->set<bool>("Nodal State", true);
 
-    //   ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
-    //   fm0.template registerEvaluator<EvalT>(ev);
+      ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
+      fm0.template registerEvaluator<EvalT>(ev);
 
-    //   if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
-    //     fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
-    // }
+      if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
+        fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
+    }
   }
 
   // --- LandIce Liquid Water Fraction
@@ -764,20 +764,20 @@ LandIce::Enthalpy::constructEvaluators (PHX::FieldManager<PHAL::AlbanyTraits>& f
     ev = Teuchos::rcp(new LandIce::LiquidWaterFraction<EvalT,PHAL::AlbanyTraits,typename EvalT::ParamScalarT>(*p,dl));
     fm0.template registerEvaluator<EvalT>(ev);
 
-    // { // Saving the melting temperature in the output mesh
-    //   std::string stateName = "phi";
-    //   entity = Albany::StateStruct::NodalDataToElemNode;
-    //   p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
-    //   p->set<std::string>("Field Name", "phi");
-    //   p->set("Field Layout", dl->node_scalar);
-    //   p->set<bool>("Nodal State", true);
+    { // Saving the melting temperature in the output mesh
+      std::string stateName = "phi";
+      entity = Albany::StateStruct::NodalDataToElemNode;
+      p = stateMgr.registerStateVariable(stateName, dl->node_scalar, elementBlockName, true, &entity, "");
+      p->set<std::string>("Field Name", "phi");
+      p->set("Field Layout", dl->node_scalar);
+      p->set<bool>("Nodal State", true);
 
-    //   ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
-    //   fm0.template registerEvaluator<EvalT>(ev);
+      ev = rcp(new PHAL::SaveStateField<EvalT,AlbanyTraits>(*p));
+      fm0.template registerEvaluator<EvalT>(ev);
 
-    //   if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
-    //     fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
-    // }
+      if ((fieldManagerChoice == Albany::BUILD_RESID_FM)&&(ev->evaluatedFields().size()>0))
+        fm0.template requireField<EvalT>(*ev->evaluatedFields()[0]);
+    }
   }
 
 
