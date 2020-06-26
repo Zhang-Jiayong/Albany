@@ -68,6 +68,8 @@ private:
 
   typedef Kokkos::MDRangePolicy< ExecutionSpace, Kokkos::Rank<2> > Phi_Policy;
 
+public:
+
   KOKKOS_INLINE_FUNCTION
   void operator() (const int& i, const int& j) const;
 };

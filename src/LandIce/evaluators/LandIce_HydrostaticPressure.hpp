@@ -67,6 +67,8 @@ private:
 
   typedef Kokkos::MDRangePolicy< ExecutionSpace, Kokkos::Rank<2> > Hydrostatic_Pressure_Policy;
 
+public:
+
   KOKKOS_INLINE_FUNCTION
   void operator() (const int& i, const int& j) const;
 
